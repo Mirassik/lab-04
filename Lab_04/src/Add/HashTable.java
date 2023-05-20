@@ -30,6 +30,9 @@ public class HashTable<K, V> {
         return index;
     }
     public void put(K key, V value){
+        if(size == M){
+            reSize();
+        }
         int index = hash(key);
         HashNode<K,V> node = chainArray[index];
         while (node != null) {
@@ -73,6 +76,23 @@ public class HashTable<K, V> {
             node = node.next;
         }
         return null;
+    }
+    public void reSize(){
+        int newM = M * 2;
+        HashNode[] newChainArray;
+        newChainArray = new HashNode[newM];
+        for (int i = 0; i < M; i++) {
+            HashNode<K, V> node = chainArray[i];
+            while (node != null) {
+                HashNode<K, V> nextNode = node.next;
+                int newIndex = hash(node.key) % newM;
+                node.next = newChainArray[newIndex];
+                newChainArray[newIndex] = node;
+                node = nextNode;
+            }
+        }
+        chainArray = newChainArray;
+        M = newM;
     }
     public boolean contains(V value){
         for (int i = 0; i < M; i++) {
